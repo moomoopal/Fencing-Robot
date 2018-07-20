@@ -1,6 +1,7 @@
 int testi;
 long counter;
 long timeWaster;
+long counterMax;
 
 bool footOn;
 bool kneeOn;
@@ -14,6 +15,7 @@ void setup() {
 
   footOn = false;
   kneeOn = false;
+  counterMax = 0;
 
   Serial.begin(9600);
   testi = 0;
@@ -63,30 +65,18 @@ void processButton(){
 void loop() {
   // put your main code here, to run repeatedly:
 
-  //light combination A
   //random(2) returns either 0(true) or 1(false)
   footOn = random(2);
   kneeOn = random(2);
+  counterMax = random(15000,100000);
   
   digitalWrite(2,footOn);
   digitalWrite(4,kneeOn);
   
-  for(counter=0; counter<200000; counter++){
+  for(counter=0; counter<counterMax; counter++){
     processButton(); 
   }
   
-  //light combination B
-  //random(2) returns either 0(true) or 1(false)
-  footOn = random(2);
-  kneeOn = random(2);
-  
-  digitalWrite(2,footOn);
-  digitalWrite(4,kneeOn);
-
-
-  for(counter=0; counter<200000; counter++){
-    processButton(); 
-  }  
   
 }
   
