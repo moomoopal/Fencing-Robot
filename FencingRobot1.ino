@@ -1,19 +1,31 @@
+int testi;
+long counter;
+long timeWaster;
+
+bool footOn;
+bool kneeOn;
+
 void setup() {
   // put your setup code here, to run once:
-  pinMode(2,OUTPUT);  
-  pinMode(3,INPUT);
-  pinMode(4,OUTPUT);
-  pinMode(7,INPUT);
+  pinMode(2,OUTPUT);  //Light - foot
+  pinMode(3,INPUT);   //Button - foot
+  pinMode(4,OUTPUT);  //Light - knee
+  pinMode(7,INPUT);   //Button - knee
+
+  footOn = false;
+  kneeOn = false;
+
+  Serial.begin(9600);
+  testi = 0;
 }
 
 void processButton(){
   
-  if (digitalRead(2)==HIGH) {
+  if (footOn==true) {
     // light is on
     if(digitalRead(3)==LOW){
       tone(5,440);
       delay(1000);
-      digitalWrite(2,LOW);
       noTone(5);
     }
     else{
@@ -22,14 +34,17 @@ void processButton(){
   }
   else {
     // light is off
+    //for(timeWaster = 0; timeWaster<5; timeWaster++){
+      noTone(5);
+ //   }
+    
   }
 
-  if (digitalRead(4)==HIGH) {
+  if (kneeOn==true) {
     // light is on
     if(digitalRead(7)==LOW){
       tone(5,440);
       delay(1000);
-      digitalWrite(4,LOW);
       noTone(5);
     }
     else{
@@ -38,6 +53,9 @@ void processButton(){
   }
   else {
     // light is off
+    //for(timeWaster = 0; timeWaster<2; timeWaster++){
+      noTone(5);
+ //   }
   }
   
 }
@@ -45,21 +63,32 @@ void processButton(){
 void loop() {
   // put your main code here, to run repeatedly:
 
-  //light combination
+  //light combination A
+  //random(2) returns either 0(true) or 1(false)
+  footOn = random(2);
+  kneeOn = random(2);
+  
+  digitalWrite(2,footOn);
+  digitalWrite(4,kneeOn);
+  
+  for(counter=0; counter<200000; counter++){
+    processButton(); 
+  }
+  
+  //light combination B
+  //random(2) returns either 0(true) or 1(false)
+  footOn = random(2);
+  kneeOn = random(2);
+  
+  digitalWrite(2,footOn);
+  digitalWrite(4,kneeOn);
 
-  digitalWrite(2,HIGH);
-  digitalWrite(4,HIGH);
-  for(int i=0; i<15151; i++){
+
+  for(counter=0; counter<200000; counter++){
     processButton(); 
-  }
-  digitalWrite(2,LOW);
-  for(int i=0; i<15151; i++){
-    processButton(); 
-  }
+  }  
   
-  
-  
-  }
+}
   
 
   //code below this line = buzzing
