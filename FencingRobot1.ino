@@ -1,82 +1,128 @@
-int testi;
+#define LEVEL 4
+
 long counter;
-long timeWaster;
 long counterMax;
 
 bool footOn;
 bool kneeOn;
+bool chestOn;
+
+int footLightPin = 2;
+int footButtonPin = 3;
+int kneeLightPin = 4;
+int buzzerPin = 5;
+int kneeButtonPin = 7;
+int chestLightPin = 8;
+int chestButtonPin = 12;
+int gameLevel = LEVEL;
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode(2,OUTPUT);  //Light - foot
-  pinMode(3,INPUT);   //Button - foot
-  pinMode(4,OUTPUT);  //Light - knee
-  pinMode(7,INPUT);   //Button - knee
+  pinMode(footLightPin,OUTPUT);  //Light - foot
+  pinMode(footButtonPin,INPUT);   //Button - foot
+  pinMode(kneeLightPin,OUTPUT);  //Light - knee
+  pinMode(kneeButtonPin,INPUT);   //Button - knee
+  pinMode(chestLightPin,OUTPUT);  //Light - chest
+  pinMode(chestButtonPin,INPUT);  //Button - chest
 
   footOn = false;
   kneeOn = false;
+  chestOn = false;
   counterMax = 0;
 
   Serial.begin(9600);
-  testi = 0;
+  
 }
 
 void processButton(){
   
-  if (footOn==true) {
+  if (footOn) {
     // light is on
-    if(digitalRead(3)==LOW){
-      tone(5,440);
+    if(digitalRead(footButtonPin)==LOW){
+      tone(buzzerPin,440);
       delay(1000);
-      noTone(5);
+      noTone(buzzerPin);
     }
     else{
-      noTone(5);
+      noTone(buzzerPin);
     }
   }
   else {
-    // light is off
-    //for(timeWaster = 0; timeWaster<5; timeWaster++){
-      noTone(5);
- //   }
-    
+     /* 
+        this noTone command is neccessary to 
+        slows down the processing time 
+        when the light is off so that is matches 
+        the processing time when light is on
+      */
+      noTone(buzzerPin);
   }
 
-  if (kneeOn==true) {
+  if (kneeOn) {
     // light is on
-    if(digitalRead(7)==LOW){
-      tone(5,440);
+    if(digitalRead(kneeButtonPin)==LOW){
+      tone(buzzerPin,440);
       delay(1000);
-      noTone(5);
+      noTone(buzzerPin);
     }
     else{
-      noTone(5);
+      noTone(buzzerPin);
     }
   }
   else {
-    // light is off
-    //for(timeWaster = 0; timeWaster<2; timeWaster++){
-      noTone(5);
- //   }
+    /* 
+        this noTone command is neccessary to 
+        slows down the processing time 
+        when the light is off so that is matches 
+        the processing time when light is on
+      */
+    noTone(buzzerPin);
+
   }
+
+  if (chestOn) {
+    // light is on
+    if(digitalRead(chestButtonPin)==LOW){
+      tone(buzzerPin,440);
+      delay(1000);
+      noTone(buzzerPin);
+    }
+    else{
+      noTone(buzzerPin);
+    }
+  }
+  else {
+    /* 
+        this noTone command is neccessary to 
+        slows down the processing time 
+        when the light is off so that is matches 
+        the processing time when light is on
+      */
+    noTone(buzzerPin);
+
+  }
+
+  
   
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  
+  
   //random(2) returns either 0(true) or 1(false)
   footOn = random(2);
   kneeOn = random(2);
-  counterMax = random(15000,100000);
+  chestOn = random(2);
+
+  counterMax = random(15000/gameLevel,100000/gameLevel);
   
-  digitalWrite(2,footOn);
-  digitalWrite(4,kneeOn);
+  digitalWrite(footLightPin,footOn);
+  digitalWrite(kneeLightPin,kneeOn);
+  digitalWrite(chestLightPin,chestOn);
   
   for(counter=0; counter<counterMax; counter++){
     processButton(); 
   }
-  
   
 }
   
