@@ -1,4 +1,8 @@
+#include <Servo.h>
 #define LEVEL 4
+
+Servo arm;
+Servo sword;
 
 long counter;
 long counterMax;
@@ -11,8 +15,10 @@ int footLightPin = 2;
 int footButtonPin = 3;
 int kneeLightPin = 4;
 int buzzerPin = 5;
+int armMotorPin = 6;
 int kneeButtonPin = 7;
 int chestLightPin = 8;
+int swordMotorPin = 9;
 int chestButtonPin = 12;
 int gameLevel = LEVEL;
 
@@ -24,6 +30,8 @@ void setup() {
   pinMode(kneeButtonPin,INPUT);   //Button - knee
   pinMode(chestLightPin,OUTPUT);  //Light - chest
   pinMode(chestButtonPin,INPUT);  //Button - chest
+  arm.attach(armMotorPin);
+  sword.attach(swordMotorPin);
 
   footOn = false;
   kneeOn = false;
@@ -107,7 +115,24 @@ void processButton(){
 
 void loop() {
   // put your main code here, to run repeatedly:
+  sword.write(0);
+  arm.write(0);
+  delay(1000);
+  sword.write(90);
+  arm.write(90);
+  delay(1000);
+ 
   
+  /*delay(1000);
+  arm.write(45);
+  delay(1000);
+  arm.write(90);
+  delay(1000);
+  arm.write(135);
+  delay(1000);
+  arm.write(180);
+  delay(1000);
+ */ 
   
   //random(2) returns either 0(true) or 1(false)
   footOn = random(2);
