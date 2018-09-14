@@ -58,7 +58,7 @@ void processButton(){
   else {
      /* 
         this noTone command is neccessary to 
-        slows down the processing time 
+        slow down the processing time 
         when the light is off so that is matches 
         the processing time when light is on
       */
@@ -115,29 +115,13 @@ void processButton(){
 
 void loop() {
   // put your main code here, to run repeatedly:
-  sword.write(0);
-  arm.write(0);
-  delay(1000);
-  sword.write(90);
-  arm.write(90);
-  delay(1000);
- 
-  
-  /*delay(1000);
-  arm.write(45);
-  delay(1000);
-  arm.write(90);
-  delay(1000);
-  arm.write(135);
-  delay(1000);
-  arm.write(180);
-  delay(1000);
- */ 
   
   //random(2) returns either 0(true) or 1(false)
   footOn = random(2);
   kneeOn = random(2);
   chestOn = random(2);
+  arm.write(random(0,91));
+  sword.write(random(0,181));
 
   counterMax = random(15000/gameLevel,100000/gameLevel);
   
