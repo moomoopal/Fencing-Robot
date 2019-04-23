@@ -3,6 +3,8 @@ int positiveLeftMotor = 3;
 int negativeLeftMotor = 5;
 int positiveRightMotor = 6;
 int negativeRightMotor = 9;
+int echo = 12;
+int trigger = 13;
 
 // DC Motor Car Functions
 void moveLeftForward(int);
@@ -24,6 +26,8 @@ void setup() {
   pinMode (negativeLeftMotor,OUTPUT);
   pinMode (positiveRightMotor,OUTPUT);
   pinMode (negativeRightMotor,OUTPUT);
+  pinMode (echo, INPUT);
+  pinMode (trigger, OUTPUT);
   Serial.begin(9600);
 }
 
@@ -99,12 +103,18 @@ void waitForButton(){
   return;
 }
 void loop() {
+  long distance;
   // put your main code here, to run repeatedly:
   waitForButton();
   moveBothForward(1000, 250);
   delay(1000);
   moveBothBackward(1000, 170);
   delay(1000);
+
+  while (1){
+    distance = distanceMonitor();
+    Serial.println(distance);
+  }
   
   /*digitalWrite (positiveLeftMotor,HIGH);
   digitalWrite (negativeLeftMotor,LOW);
@@ -131,7 +141,21 @@ void loop() {
   digitalWrite (positiveRightMotor,HIGH);
   digitalWrite (negativeRightMotor,HIGH);
   delay(500);
-  */
+  */  
+}
+int distanceMonitor(){
+  long distance;
+  //send pulse
+  digitalWrite (trigger, LOW);
+  delayMicroseconds (2);
+  digitalWrite (trigger, HIGH);
+  delayMicroseconds (20);
+  digitalWrite (trigger, LOW);
 
+  //wait for pulse to come back
+  distance = pulseIn(echo, HIGH);
+  distance /= 59;
+  return distance;
+  
   
 }
