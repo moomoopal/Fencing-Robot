@@ -13,11 +13,15 @@ void moveBothForward(int, int);
 void moveLeftBackward(int);
 void moveRightBackward(int);
 void moveBothBackward(int, int); 
+void moveBothForwardContinuously(int);
 void rStopLeft();
 void rStopRight();
 void rStopBoth();
 void moveHalfLeftForward();
 void waitForButton();
+int distanceMonitor();
+void wallDetector();
+void keepingDistance(int);
 
 void setup() {
   // put your setup code here, to run once:
@@ -93,6 +97,11 @@ void moveHalfLeftForward(){
   analogWrite (positiveLeftMotor, 80);
   analogWrite (negativeLeftMotor, 0);
 }
+void moveBothForwardContinuously(int pwr){
+  moveLeftForward(pwr);
+  //0.5 Voltage difference between the two motors, multiply by 100 and add to right (weaker) pwr to make the robot go straight
+  moveRightForward(pwr+50);
+}
 void waitForButton(){
   int buttonPress;
   buttonPress = digitalRead(startButton);
@@ -102,48 +111,62 @@ void waitForButton(){
   }
   return;
 }
-void loop() {
+void wallDetector(){
   long distance;
-  // put your main code here, to run repeatedly:
   waitForButton();
-  moveBothForward(1000, 250);
-  delay(1000);
-  moveBothBackward(1000, 170);
-  delay(1000);
 
   while (1){
+    
     distance = distanceMonitor();
-    Serial.println(distance);
+    if (distance != 0) {
+      Serial.println(distance);
+    }
+    else{
+      //do nothing 
+    }
+    
+    //1>= distance <=10
+    if ((distance >=1)&&(distance <=35)){
+      rStopBoth();
+    }
+    else{
+      moveBothForwardContinuously(150);
+    }
+    
   }
-  
-  /*digitalWrite (positiveLeftMotor,HIGH);
-  digitalWrite (negativeLeftMotor,LOW);
-  delay(1000);
-  digitalWrite (positiveLeftMotor,LOW);
-  digitalWrite (negativeLeftMotor,LOW);
-  delay(500);
-  digitalWrite (positiveLeftMotor,LOW);
-  digitalWrite (negativeLeftMotor,HIGH);
-  delay(1000);
-  digitalWrite (positiveLeftMotor,LOW);
-  digitalWrite (negativeLeftMotor,LOW);
-  delay(500);
-  
-  digitalWrite (positiveRightMotor,HIGH);
-  digitalWrite (negativeRightMotor,LOW);
-  delay(1000);
-  digitalWrite (positiveRightMotor,HIGH);
-  digitalWrite (negativeRightMotor,HIGH);
-  delay(500);
-  digitalWrite (positiveRightMotor,LOW);
-  digitalWrite (negativeRightMotor,HIGH);
-  delay(1000);
-  digitalWrite (positiveRightMotor,HIGH);
-  digitalWrite (negativeRightMotor,HIGH);
-  delay(500);
-  */  
 }
+
+void keepingDistance(int fencingDistance){
+  long distance;
+  waitForButton();
+
+  while (1){
+    
+    distance = distanceMonitor();
+    if (distance != 0) {
+      Serial.println(distance);
+    }
+    else{
+      //do nothing 
+    }
+    
+    //1>= distance <=10
+    if ((distance >=1)&&(distance <=35)){
+      rStopBoth();
+    }
+    else{
+      moveBothForwardContinuously(150);
+    }
+    
+  }
+}
+void loop() {
+  wallDetector();  
+}
+
 int distanceMonitor(){
+  
+
   long distance;
   //send pulse
   digitalWrite (trigger, LOW);
