@@ -49,9 +49,33 @@ void moveRightForward(int pwr) {
 
 void moveBothForward(int ms, int pwr) {
   moveLeftForward(pwr);
-  moveRightForward(pwr);
+  //0.5 Voltage difference between the two motors, multiply by 100 and add to right (weaker) pwr to make the robot go straight
+  moveRightForward(pwr+50);
   delay(ms);
   rStopBoth();
+  return;
+}
+
+void moveBothForwardCm(int cm, int pwr) {
+  int ms;
+  float spd;
+  if (pwr == 100){
+    spd = 0.0275;
+    ms = cm/spd;
+    moveLeftForward(pwr);
+    //0.5 Voltage difference between the two motors, multiply by 100 and add to right (weaker) pwr to make the robot go straight
+    moveRightForward(pwr+50);
+    delay(ms);
+    rStopBoth(); 
+  }
+  else if(pwr == 162){
+    
+  }
+  else if(pwr == 255){
+    
+  }
+  
+ 
   return;
 }
 
@@ -106,7 +130,7 @@ void waitForButton(){
   int buttonPress;
   buttonPress = digitalRead(startButton);
   while (buttonPress == HIGH){
-    //Serial.println(buttonPress); 
+    Serial.println(buttonPress); 
     buttonPress = digitalRead(startButton);
   }
   return;
@@ -136,22 +160,17 @@ void wallDetector(){
   }
 }
 
-void keepingDistance(int fencingDistance){
+/*void keepingDistance(int fencingDistance){
   long distance;
   waitForButton();
 
   while (1){
     
     distance = distanceMonitor();
-    if (distance != 0) {
-      Serial.println(distance);
-    }
-    else{
-      //do nothing 
-    }
-    
+    if (distance > fencingDistance);
+      moveBothForward
     //1>= distance <=10
-    if ((distance >=1)&&(distance <=35)){
+    if ((distance >=1)&&(distance <= fencingDistance)){
       rStopBoth();
     }
     else{
@@ -160,8 +179,11 @@ void keepingDistance(int fencingDistance){
     
   }
 }
+*/
 void loop() {
-  wallDetector();  
+  //keepingDistance(20);
+  waitForButton(); 
+  moveBothForwardCm(34, 100); 
 }
 
 int distanceMonitor(){
@@ -182,3 +204,4 @@ int distanceMonitor(){
   
   
 }
+
