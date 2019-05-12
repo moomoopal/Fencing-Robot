@@ -55,21 +55,40 @@ void moveBothForward(int ms, int pwr) {
   rStopBoth();
   return;
 }
-
+//caliberated using 5.8 volts on DC driver
 void moveBothForwardCm(int cm, int pwr) {
   int ms;
   float spd;
   if (pwr == 100){
-    spd = 0.0275;
+  }
+  else if(pwr == 162){
+    spd = 0.027;
     ms = cm/spd;
     moveLeftForward(pwr);
     //0.5 Voltage difference between the two motors, multiply by 100 and add to right (weaker) pwr to make the robot go straight
-    moveRightForward(pwr+50);
+    moveRightForward(pwr+40);
     delay(ms);
     rStopBoth(); 
   }
-  else if(pwr == 162){
+  else if(pwr == 255){
     
+  }
+  
+ 
+  return;
+}
+void moveBothBackwardCm(int cm, int pwr) {
+  int ms;
+  float spd;
+  if (pwr == 100){
+  }
+  else if(pwr == 162){
+    spd = 0.027;
+    ms = cm/spd;
+    moveLeftBackward(pwr);
+    moveRightBackward(pwr+40);
+    delay(ms);
+    rStopBoth(); 
   }
   else if(pwr == 255){
     
@@ -130,7 +149,7 @@ void waitForButton(){
   int buttonPress;
   buttonPress = digitalRead(startButton);
   while (buttonPress == HIGH){
-    Serial.println(buttonPress); 
+    //Serial.println(buttonPress); 
     buttonPress = digitalRead(startButton);
   }
   return;
@@ -160,30 +179,53 @@ void wallDetector(){
   }
 }
 
-/*void keepingDistance(int fencingDistance){
+void keepingDistance(int fencingDistance){
   long distance;
+  long tolerance = 3;
+  long delta;
   waitForButton();
-
+  
   while (1){
     
     distance = distanceMonitor();
-    if (distance > fencingDistance);
-      moveBothForward
-    //1>= distance <=10
-    if ((distance >=1)&&(distance <= fencingDistance)){
-      rStopBoth();
+
+    Serial.println(distance);
+    delta = abs(distance - fencingDistance);
+    if (delta > tolerance){
+      //if the distance is far
+      if (distance > fencingDistance){
+        moveBothForwardCm(1, 162);
+      }
+      //1>= distance <=10
+      //if distance is close
+      if ((distance >=1)&&(distance <= fencingDistance)){
+        moveBothBackwardCm(1, 162);
+      }
+      else{
+        //if we see a 0, it stops
+        rStopBoth();
+      }
+      
     }
     else{
-      moveBothForwardContinuously(150);
+      rStopBoth();
     }
     
   }
 }
-*/
+
 void loop() {
   //keepingDistance(20);
-  waitForButton(); 
-  moveBothForwardCm(34, 100); 
+  keepingDistance(15);
+  /*moveBothForwardCm(20, 162); 
+  delay(1000);
+  moveBothBackwardCm(10, 162);
+  delay(1000);
+  moveBothForwardCm(25, 162);
+  delay(1000);
+  moveBothBackwardCm(30, 162);
+  delay(1000);
+  */
 }
 
 int distanceMonitor(){
