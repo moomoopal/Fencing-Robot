@@ -1,3 +1,5 @@
+#define LMOTORADJ 33
+#define RMOTORADJ 36
 int startButton = 2;
 int positiveLeftMotor = 3;
 int negativeLeftMotor = 5;
@@ -50,7 +52,7 @@ void moveRightForward(int pwr) {
 void moveBothForward(int ms, int pwr) {
   moveLeftForward(pwr);
   //0.5 Voltage difference between the two motors, multiply by 100 and add to right (weaker) pwr to make the robot go straight
-  moveRightForward(pwr+50);
+  moveRightForward(pwr+RMOTORADJ);
   delay(ms);
   rStopBoth();
   return;
@@ -60,13 +62,20 @@ void moveBothForwardCm(int cm, int pwr) {
   int ms;
   float spd;
   if (pwr == 100){
+    spd = 0.02;
+    ms = cm/spd;
+    moveLeftForward(pwr);
+    //0.5 Voltage difference between the two motors, multiply by 100 and add to right (weaker) pwr to make the robot go straight
+    moveRightForward(pwr+RMOTORADJ);
+    delay(ms);
+    rStopBoth(); 
   }
   else if(pwr == 162){
     spd = 0.027;
     ms = cm/spd;
     moveLeftForward(pwr);
     //0.5 Voltage difference between the two motors, multiply by 100 and add to right (weaker) pwr to make the robot go straight
-    moveRightForward(pwr+40);
+    moveRightForward(pwr+RMOTORADJ);
     delay(ms);
     rStopBoth(); 
   }
@@ -81,12 +90,19 @@ void moveBothBackwardCm(int cm, int pwr) {
   int ms;
   float spd;
   if (pwr == 100){
+    spd = 0.02;
+    ms = cm/spd;
+    moveLeftBackward(pwr+LMOTORADJ);
+    moveRightBackward(pwr);
+    delay(ms);
+    rStopBoth(); 
+     
   }
   else if(pwr == 162){
     spd = 0.027;
     ms = cm/spd;
-    moveLeftBackward(pwr);
-    moveRightBackward(pwr+40);
+    moveLeftBackward(pwr+LMOTORADJ);
+    moveRightBackward(pwr);
     delay(ms);
     rStopBoth(); 
   }
@@ -111,7 +127,7 @@ void moveRightBackward(int pwr){
 }
 
 void moveBothBackward(int ms, int pwr){
-  moveLeftBackward(pwr);
+  moveLeftBackward(pwr+LMOTORADJ);
   moveRightBackward(pwr);
   delay(ms);
   rStopBoth();
@@ -188,18 +204,18 @@ void keepingDistance(int fencingDistance){
   while (1){
     
     distance = distanceMonitor();
-
+    delay(100);
     Serial.println(distance);
     delta = abs(distance - fencingDistance);
     if (delta > tolerance){
       //if the distance is far
       if (distance > fencingDistance){
-        moveBothForwardCm(1, 162);
+        moveBothForwardCm(delta, 162);
       }
       //1>= distance <=10
       //if distance is close
       if ((distance >=1)&&(distance <= fencingDistance)){
-        moveBothBackwardCm(1, 162);
+        moveBothBackwardCm(delta, 162);
       }
       else{
         //if we see a 0, it stops
@@ -215,8 +231,13 @@ void keepingDistance(int fencingDistance){
 }
 
 void loop() {
-  //keepingDistance(20);
+  waitForButton();
+  delay(1000);
+  
+  
+  while (1){
   keepingDistance(15);
+  }
   /*moveBothForwardCm(20, 162); 
   delay(1000);
   moveBothBackwardCm(10, 162);
