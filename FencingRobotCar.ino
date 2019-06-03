@@ -260,7 +260,7 @@ int distanceMonitor(){
   delayMicroseconds (20);
   digitalWrite (trigger, LOW);
 
-  //wait for pulse to come back
+  ///wait for pulse to come back
   distance = pulseIn(echo, HIGH);
   distance /= 59;
   return distance;
