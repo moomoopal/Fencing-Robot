@@ -79,7 +79,14 @@ void moveBothForwardCm(int cm, int pwr) {
     delay(ms);
     rStopBoth(); 
   }
-  else if(pwr == 255){
+  else if(pwr == 200){
+    spd = 0.036;
+    ms = cm/spd;
+    moveLeftForward(pwr);
+    //0.5 Voltage difference between the two motors, multiply by 100 and add to right (weaker) pwr to make the robot go straight
+    moveRightForward(pwr+RMOTORADJ);
+    delay(ms);
+    rStopBoth();
     
   }
   
@@ -106,8 +113,13 @@ void moveBothBackwardCm(int cm, int pwr) {
     delay(ms);
     rStopBoth(); 
   }
-  else if(pwr == 255){
-    
+  else if(pwr == 200){
+    spd = 0.036;
+    ms = cm/spd;
+    moveLeftBackward(pwr+LMOTORADJ);
+    moveRightBackward(pwr);
+    delay(ms);
+    rStopBoth(); 
   }
   
  
@@ -197,6 +209,7 @@ void wallDetector(){
 
 void keepingDistance(int fencingDistance){
   long distance;
+  int spd = 200;
   long tolerance = 3;
   long delta;
   waitForButton();
@@ -210,12 +223,12 @@ void keepingDistance(int fencingDistance){
     if (delta > tolerance){
       //if the distance is far
       if (distance > fencingDistance){
-        moveBothForwardCm(delta, 162);
+        moveBothForwardCm(delta, spd);
       }
       //1>= distance <=10
       //if distance is close
       if ((distance >=1)&&(distance <= fencingDistance)){
-        moveBothBackwardCm(delta, 162);
+        moveBothBackwardCm(delta, spd);
       }
       else{
         //if we see a 0, it stops
@@ -233,11 +246,12 @@ void keepingDistance(int fencingDistance){
 void loop() {
   waitForButton();
   delay(1000);
-  
+
   
   while (1){
   keepingDistance(15);
   }
+  
   /*moveBothForwardCm(20, 162); 
   delay(1000);
   moveBothBackwardCm(10, 162);
@@ -260,7 +274,7 @@ int distanceMonitor(){
   delayMicroseconds (20);
   digitalWrite (trigger, LOW);
 
-  ///wait for pulse to come back
+  //wait for pulse to come back
   distance = pulseIn(echo, HIGH);
   distance /= 59;
   return distance;
