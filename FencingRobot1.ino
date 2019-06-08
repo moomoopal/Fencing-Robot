@@ -1,8 +1,14 @@
 #include <Servo.h>
 #define LEVEL 4
+#define BICEPUP 180
+#define BICEPDOWN 30
+#define BICEPMIDDLE 90
+#define FOREARMEXTEND 0
+#define FOREARMWITHDRAW 90
+#define FOREARMENGARDE 70
 
-Servo arm;
-Servo sword;
+Servo bicep;
+Servo forearm;
 
 long counter;
 long counterMax;
@@ -30,8 +36,8 @@ void setup() {
   pinMode(kneeButtonPin,INPUT);   //Button - knee
   pinMode(chestLightPin,OUTPUT);  //Light - chest
   pinMode(chestButtonPin,INPUT);  //Button - chest
-  arm.attach(armMotorPin);
-  sword.attach(swordMotorPin);
+  bicep.attach(armMotorPin);
+  forearm.attach(swordMotorPin);
 
   footOn = false;
   kneeOn = false;
@@ -112,17 +118,29 @@ void processButton(){
   
   
 }
-
+void enGarde(){
+  bicep.write(BICEPDOWN);
+  forearm.write(FOREARMENGARDE);
+}
+void extend(){
+  bicep.write(BICEPMIDDLE);
+  forearm.write(FOREARMEXTEND);
+}
 void loop() {
   // put your main code here, to run repeatedly:
+  enGarde();
+  delay(1000);
+  extend();
+  delay(1000);
   
   //random(2) returns either 0(true) or 1(false)
   footOn = random(2);
   kneeOn = random(2);
   chestOn = random(2);
-  arm.write(random(0,91));
-  sword.write(random(0,181));
-
+  //bicep.write(random(0,91));
+  //forearm.write(random(0,181));
+  
+  
   counterMax = random(15000/gameLevel,100000/gameLevel);
   
   digitalWrite(footLightPin,footOn);
@@ -140,4 +158,3 @@ void loop() {
   
   
   
-
