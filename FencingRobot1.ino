@@ -3,12 +3,22 @@
 #define BICEPUP 180
 #define BICEPDOWN 30
 #define BICEPMIDDLE 90
+
 #define FOREARMEXTEND 0
 #define FOREARMWITHDRAW 90
 #define FOREARMENGARDE 70
 
+#define SWORDCCW 180
+#define SWORDHALFCCW 135
+#define SWORDSLOWCCW 110
+#define SWORDSTOP 90
+#define SWORDHALFCW 45
+#define SWORDSLOWCW 70
+#define SWORDCW 0
+
 Servo bicep;
 Servo forearm;
+Servo sword;
 
 long counter;
 long counterMax;
@@ -21,10 +31,11 @@ int footLightPin = 2;
 int footButtonPin = 3;
 int kneeLightPin = 4;
 int buzzerPin = 5;
-int armMotorPin = 6;
+int bicepMotorPin = 6;
 int kneeButtonPin = 7;
 int chestLightPin = 8;
-int swordMotorPin = 9;
+int forearmMotorPin = 9;
+int swordMotorPin = 10;
 int chestButtonPin = 12;
 int gameLevel = LEVEL;
 
@@ -36,8 +47,9 @@ void setup() {
   pinMode(kneeButtonPin,INPUT);   //Button - knee
   pinMode(chestLightPin,OUTPUT);  //Light - chest
   pinMode(chestButtonPin,INPUT);  //Button - chest
-  bicep.attach(armMotorPin);
-  forearm.attach(swordMotorPin);
+  bicep.attach(bicepMotorPin);
+  forearm.attach(forearmMotorPin);
+  sword.attach(swordMotorPin);
 
   footOn = false;
   kneeOn = false;
@@ -126,12 +138,50 @@ void extend(){
   bicep.write(BICEPMIDDLE);
   forearm.write(FOREARMEXTEND);
 }
+void highline(){
+  
+}
+
+void defenseCircle6(int duration){
+  bicep.write(BICEPDOWN);
+  forearm.write(120);
+  sword.write(SWORDCCW);
+  delay(duration);
+  sword.write(SWORDSTOP);
+}
+
+void defenseCircle4(int duration){
+  bicep.write(BICEPDOWN);
+  forearm.write(120);
+  sword.write(SWORDCW);
+  delay(duration);
+  sword.write(SWORDSTOP);
+}
+
+void defenseCircle8(int duration){
+  bicep.write(BICEPDOWN);
+  forearm.write(30);
+  sword.write(SWORDCW);
+  delay(duration);
+  sword.write(SWORDSTOP);
+}
+
+void defenseCircle7(int duration){
+  bicep.write(BICEPDOWN);
+  forearm.write(30);
+  sword.write(SWORDCCW);
+  delay(duration);
+  sword.write(SWORDSTOP);
+}
+
 void loop() {
   // put your main code here, to run repeatedly:
-  enGarde();
-  delay(1000);
-  extend();
-  delay(1000);
+  defenseCircle8(2000);
+  defenseCircle6(2000);
+  defenseCircle7(2000);
+  defenseCircle4(2000);
+
+  
   
   //random(2) returns either 0(true) or 1(false)
   footOn = random(2);
