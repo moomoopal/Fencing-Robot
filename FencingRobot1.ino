@@ -1,12 +1,15 @@
 #include <Servo.h>
 #define LEVEL 4
 #define BICEPUP 180
-#define BICEPDOWN 30
+#define BICEPDOWN 40
 #define BICEPMIDDLE 90
 
-#define FOREARMEXTEND 0
+#define FOREARMEXTEND 20
 #define FOREARMWITHDRAW 90
 #define FOREARMENGARDE 70
+
+#define ELBOWMAX 110
+#define ELBOWEXTEND 40
 
 #define SWORDCCW 180
 #define SWORDHALFCCW 135
@@ -18,6 +21,7 @@
 
 Servo bicep;
 Servo forearm;
+Servo elbow;
 Servo sword;
 
 long counter;
@@ -36,6 +40,7 @@ int kneeButtonPin = 7;
 int chestLightPin = 8;
 int forearmMotorPin = 9;
 int swordMotorPin = 10;
+int elbowMotorPin = 11;
 int chestButtonPin = 12;
 int gameLevel = LEVEL;
 
@@ -49,6 +54,7 @@ void setup() {
   pinMode(chestButtonPin,INPUT);  //Button - chest
   bicep.attach(bicepMotorPin);
   forearm.attach(forearmMotorPin);
+  elbow.attach(elbowMotorPin);
   sword.attach(swordMotorPin);
 
   footOn = false;
@@ -133,64 +139,116 @@ void processButton(){
 void enGarde(){
   bicep.write(BICEPDOWN);
   forearm.write(FOREARMENGARDE);
+  elbow.write(ELBOWEXTEND);
+  
 }
 void extend(){
   bicep.write(BICEPMIDDLE);
   forearm.write(FOREARMEXTEND);
+  elbow.write(ELBOWEXTEND);
 }
 void highline(){
   
 }
+void defense6(){
+  bicep.write(50);
+  forearm.write(FOREARMENGARDE);
+  elbow.write(50);
+}
 
-void defenseCircle6(int duration){
+void defense4(){
+  bicep.write(50);
+  forearm.write(FOREARMENGARDE);
+  elbow.write(60);
+}
+
+void defense8(){
   bicep.write(BICEPDOWN);
-  forearm.write(120);
+  forearm.write(20);
+  elbow.write(60);
+}
+
+void defense7(){
+  bicep.write(BICEPDOWN);
+  forearm.write(20);
+  elbow.write(70);
+}
+void defenseCircle6(int duration){
+  defense6();
   sword.write(SWORDCCW);
   delay(duration);
   sword.write(SWORDSTOP);
 }
 
 void defenseCircle4(int duration){
-  bicep.write(BICEPDOWN);
-  forearm.write(120);
+  defense4();
   sword.write(SWORDCW);
   delay(duration);
   sword.write(SWORDSTOP);
 }
 
 void defenseCircle8(int duration){
-  bicep.write(BICEPDOWN);
-  forearm.write(30);
+  defense8();
   sword.write(SWORDCW);
   delay(duration);
   sword.write(SWORDSTOP);
 }
 
 void defenseCircle7(int duration){
-  bicep.write(BICEPDOWN);
-  forearm.write(30);
+  defense7();
   sword.write(SWORDCCW);
   delay(duration);
   sword.write(SWORDSTOP);
 }
 
+void testRoutine(){
+  enGarde();
+  delay(1000);
+  extend();
+  delay(1000);
+  defenseCircle8(1000);
+  defenseCircle7(1000);
+  defense4();
+  delay(1000);
+  defenseCircle4(1000);
+  defenseCircle6(1000);
+  defense8();
+  delay(1000);
+  defense7();
+  delay(1000);
+  defense6();
+  delay(1000);
+}
+
 void loop() {
   // put your main code here, to run repeatedly:
-  defenseCircle8(2000);
-  defenseCircle6(2000);
-  defenseCircle7(2000);
-  defenseCircle4(2000);
-
   
   
-  //random(2) returns either 0(true) or 1(false)
+  
+  
+  //random(2) returns either 0(false) or 1(true)
   footOn = random(2);
   kneeOn = random(2);
   chestOn = random(2);
-  //bicep.write(random(0,91));
-  //forearm.write(random(0,181));
   
-  
+  if (footOn == true){
+    kneeOn = false;
+    chestOn = false;
+    defense8();
+  }
+  if (kneeOn == true){
+    chestOn = false;
+    footOn = false;
+    defense7();
+  }
+  if (chestOn ==true){
+    footOn = false;
+    kneeOn = false;
+    defense6();
+  }
+  if ((footOn == false) && (kneeOn == false) && (chestOn == false)){
+    extend();
+  }
   counterMax = random(15000/gameLevel,100000/gameLevel);
   
   digitalWrite(footLightPin,footOn);
