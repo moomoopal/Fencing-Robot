@@ -5,6 +5,25 @@ decode_results output;
 
 #define LMOTORADJ 33
 #define RMOTORADJ 36
+#define ONE 41565
+#define TWO 25245
+#define THREE 57885
+#define FOUR 8925
+#define FIVE 765
+#define SIX 49725
+#define SEVEN 57375
+#define EIGHT 43095
+#define NINE 36975
+#define ZERO 39015
+#define STAR 26775
+#define HASHTAG 45135
+#define UP 6375
+#define LEFT 4335
+#define RIGHT 23205
+#define DOWN 19125
+#define OK 14535
+#define HOLD 65535
+
 int startButton = 2;
 int positiveLeftMotor = 5;
 int negativeLeftMotor = 10;
@@ -12,6 +31,7 @@ int positiveRightMotor = 6;
 int negativeRightMotor = 9;
 int echo = 12;
 int trigger = 13;
+int runKeepingDistance = 0;
 
 // DC Motor Car Functions
 void moveLeftForward(int);
@@ -217,7 +237,36 @@ void wallDetector(){
     
   }
 }
-
+void processKeepingDistance(int fencingDistance){
+    long distance;
+    int spd = 200;
+    long tolerance = 3;
+    long delta;
+   
+    distance = distanceMonitor();
+    delay(100);
+    Serial.println(distance);
+    delta = abs(distance - fencingDistance);
+    if (delta > tolerance){
+      //if the distance is far
+      if (distance > fencingDistance){
+        moveBothForwardCm(delta, spd);
+      }
+      //1>= distance <=10
+      //if distance is close
+      if ((distance >=1)&&(distance <= fencingDistance)){
+        moveBothBackwardCm(delta, spd);
+      }
+      else{
+        //if we see a 0, it stops
+        rStopBoth();
+      }
+      
+    }
+    else{
+      rStopBoth();
+    }
+}
 void keepingDistance(int fencingDistance){
   long distance;
   int spd = 200;
@@ -257,36 +306,51 @@ void keepingDistance(int fencingDistance){
 void loop() {
   //waitForButton();
   //delay(1000);
-
+  
   if (receiver.decode(&output)){
     unsigned int value = output.value;
-    if (value == 6375){
+    Serial.println(value);
+    if (value == UP){
       //moveBothForwardContinuously(162);
-      moveRightForward(162);
+      moveBothForwardContinuously(162);
     }
-    if (value == 19125){
+    if (value == DOWN){
       moveBothBackwardContinuously(162);
     }
-    if (value == 39015){
+    if (value == OK){
       rStopBoth();
     }
-    Serial.println(value);
-    Serial.println(analogRead(11));
+    if (value == LEFT){
+      moveLeftForward(162);
+      moveRightBackward(162);
+      delay(1000);
+      rStopLeft();
+    }
+    if (value == RIGHT){
+      moveRightForward(162);
+      moveLeftBackward(162);
+      delay(1000);
+      rStopRight();
+    }
+    if (value != HOLD){
+      
+      if (value == STAR){
+        runKeepingDistance = 1;
+      }
+      else {
+        runKeepingDistance = 0;
+      }
+      
+    }
+
     receiver.resume();
+    
   }
-  //while (1){
-  //keepingDistance(15);
-  //}
-  
-  /*moveBothForwardCm(20, 162); 
-  delay(1000);
-  moveBothBackwardCm(10, 162);
-  delay(1000);
-  moveBothForwardCm(25, 162);
-  delay(1000);
-  moveBothBackwardCm(30, 162);
-  delay(1000);
-  */
+  if (runKeepingDistance == 1) {
+      processKeepingDistance(15);
+
+    }
+  //Serial.println(runKeepingDistance);
 }
 
 int distanceMonitor(){
